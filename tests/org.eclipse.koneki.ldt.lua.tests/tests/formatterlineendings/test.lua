@@ -8,9 +8,9 @@
 -- Contributors:
 --     Sierra Wireless - initial API and implementation
 --------------------------------------------------------------------------------
+local diff = require 'diff'
 local formatter =  require 'formatter'
 local string =     require 'string'
-local javaassert = java.require 'org.junit.Assert'
 
 local M = {}
 function M.test(luainputpath, luareferencepath)
@@ -49,12 +49,10 @@ function M.test(luainputpath, luareferencepath)
     luareferencepath, errormessage or '')
   )
   local referenceCode = referenceFile:read('*a')
-
-  -- Check equality by catching assertException from assertEquals
-  local status, errormessage = pcall( function()
-    javaassert:assertEquals('Unexpected line endings', referenceCode,
-      formattedCode)
-  end)
-  return status or nil, tostring(errormessage)
+  if referenceCode ~= formattedCode then
+    return nil, string.format('Formatting Error:\%s',
+      diff(referenceCode, formattedCode):format_as_text())
+  end
+  return true
 end
 return M
