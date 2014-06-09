@@ -171,7 +171,9 @@ function M.new_comment(lines)
     local first = lines[1].lineinfo.first
     local last  = lines[#lines].lineinfo.last
     local lineinfo = M.new_lineinfo(first, last)
-    return setmetatable({lineinfo=lineinfo, unpack(lines)}, MT.comment)
+    local commentnode = { lineinfo=lineinfo }
+    for k,v in pairs(lines) do commentnode[k] = v end
+    return setmetatable(commentnode, MT.comment)
 end
 
 function MT.comment :text()
